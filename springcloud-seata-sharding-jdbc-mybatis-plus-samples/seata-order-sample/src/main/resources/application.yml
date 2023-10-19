@@ -1,0 +1,99 @@
+server:
+  port: 8001
+spring:
+  application:
+    name: order-server
+  cloud:
+    nacos:
+      discovery:
+        group: gyf
+        server-addr: 192.168.0.7:8848
+  database:
+    core:
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      url: jdbc:mysql://192.168.0.7:3308/seata_order_core?serverTimezone=UTC&characterEncoding=utf8
+      username: root
+      password: root.123
+      initial-size: 10
+      max-active: 15
+      max-wait: 60000
+      min-idle: 10
+    ds0:
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      url: jdbc:mysql://192.168.0.7:3308/seata_order_0?serverTimezone=UTC&characterEncoding=utf8
+      username: root
+      password: root.123
+      initial-size: 10
+      max-active: 15
+      max-wait: 60000
+      min-idle: 10
+    ds1:
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      url: jdbc:mysql://192.168.0.7:3308/seata_order_1?serverTimezone=UTC&characterEncoding=utf8
+      username: root
+      password: root.123
+      initial-size: 10
+      max-active: 15
+      max-wait: 60000
+      min-idle: 10
+  main:
+    allow-bean-definition-overriding: true
+  shardingsphere:
+#    datasource:
+#      names: ds0,ds1
+#      ds0:
+#        driver-class-name: com.mysql.cj.jdbc.Driver
+#        jdbc-url: jdbc:mysql://192.168.0.7:3308/seata_order_0?serverTimezone=UTC&characterEncoding=utf8
+#        password: root.123
+#        type: com.zaxxer.hikari.HikariDataSource
+#        username: root
+#      ds1:
+#        driver-class-name: com.mysql.cj.jdbc.Driver
+#        jdbc-url: jdbc:mysql://192.168.0.7:3308/seata_order_1?serverTimezone=UTC&characterEncoding=utf8
+#        password: root.123
+#        type: com.zaxxer.hikari.HikariDataSource
+#        username: root
+    props:
+      sql:
+        show: true
+    sharding:
+      default-data-source-name: ds0
+#      default-database-strategy:
+#        inline:
+#          algorithm-expression: ds$->{id % 2}
+#          sharding-column: id
+      tables:
+        order_info:
+          actual-data-nodes: ds$->{0..1}.order_info_$->{0..2}
+          database-strategy:
+            inline:
+              algorithm-expression: ds$->{id % 2}
+              sharding-column: id
+          table-strategy:
+            inline:
+              algorithm-expression: order_info_$->{id % 3}
+              sharding-column: id
+seata:
+  application-id: order-server
+  tx-service-group: seata-group
+  enable-auto-data-source-proxy: false
+  config:
+    nacos:
+      data-id: seata.properties
+      group: seata
+      namespace: 53bf2e79-c596-4afa-a75f-6a90904df10f
+      password: root.123
+      server-addr: 192.168.0.7:8848
+      username: root
+    type: nacos
+  registry:
+    nacos:
+      group: SEATA_GROUP
+      namespace: 53bf2e79-c596-4afa-a75f-6a90904df10f
+      password: root.123
+      server-addr: 192.168.0.7:8848
+      username: root
+    type: nacos
+logging:
+  level:
+    io.seata.order.mapper: debug

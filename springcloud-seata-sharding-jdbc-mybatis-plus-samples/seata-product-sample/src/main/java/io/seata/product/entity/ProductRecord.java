@@ -4,12 +4,14 @@ import java.time.LocalDateTime;
 import lombok.Data;
 
 @Data
-public class Product {
+public class ProductRecord {
     private Long id;
+
+    private Long productId;
 
     private String productName;
 
-    private Integer stock;
+    private Integer buyNum;
 
     private LocalDateTime createTime;
 

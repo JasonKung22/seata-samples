@@ -1,0 +1,71 @@
+server:
+  port: 8002
+spring:
+  application:
+    name: product-server
+  cloud:
+    nacos:
+      discovery:
+        group: gyf
+        server-addr: 192.168.0.7:8848
+  database:
+    product:
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      url: jdbc:mysql://192.168.0.7:3308/seata_product?serverTimezone=UTC&characterEncoding=utf8
+      username: root
+      password: root.123
+      initial-size: 10
+      max-active: 15
+      min-idle: 10
+      max-wait: 60000
+  main:
+    allow-bean-definition-overriding: true
+  shardingsphere:
+    props:
+      sql:
+        show: true
+    sharding:
+      default-data-source-name: product
+      tables:
+        product_record:
+          actual-data-nodes: product.product_record_$->{0..2}
+          table-strategy:
+            inline:
+              algorithm-expression: product_record_$->{product_id % 3}
+              sharding-column: product_id
+seata:
+  application-id: product-server
+  tx-service-group: seata-group
+  enable-auto-data-source-proxy: false
+  config:
+    nacos:
+      data-id: seata.properties
+      group: seata
+      namespace: 53bf2e79-c596-4afa-a75f-6a90904df10f
+      password: root.123
+      server-addr: 192.168.0.7:8848
+      username: root
+    type: nacos
+  registry:
+    nacos:
+      group: SEATA_GROUP
+      namespace: 53bf2e79-c596-4afa-a75f-6a90904df10f
+      password: root.123
+      server-addr: 192.168.0.7:8848
+      username: root
+    type: nacos
+feign:
+  client:
+    config:
+      default:
+        connectTimeout: 5000
+        loggerLevel: BASIC
+        readTimeout: 5000
+  httpclient:
+    connection-timeout: 2000
+    enabled: true
+    max-connections: 200
+    max-connections-per-route: 50
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true

@@ -19,4 +19,10 @@ public class OrderController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
+    @PostMapping("/seataToSharding")
+    public ResponseEntity<Void> seataToSharding(Boolean hasError) {
+        orderService.seataToSharding(hasError);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
 }
